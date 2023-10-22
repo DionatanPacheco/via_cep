@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:via_cep/model/back4app_model.dart';
+import 'package:via_cep/pages/cep_page.dart';
+import 'package:via_cep/repositories/cep_repositories.dart';
 // ignore: depend_on_referenced_packages
-import 'package:http/http.dart' as http;
-import 'package:via_cep/model/viacep_model.dart';
-import 'package:via_cep/repositories/via_cep_repository.dart';
-import 'package:via_cep/widgets/test_drawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,12 +14,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var cepController = TextEditingController(text: "");
   bool loading = false;
-  viaCepModel viacepModel = viaCepModel();
-  ViaCepRepository viaCepRepository = ViaCepRepository();
+  CepBack4AppModel cepModel = CepBack4AppModel([]);
+  CepRepository cepRepository = CepRepository();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: TestDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.blueGrey[900],
         title: const Text(
@@ -44,7 +43,7 @@ class _HomePageState extends State<HomePage> {
                 setState(() {
                   loading = true;
                 });
-                viacepModel = await viaCepRepository.consultarCEP(cep);
+                cepModel = await cepRepository.consultarCEP(cep);
               } else {}
               setState(() {
                 loading = false;
@@ -55,30 +54,45 @@ class _HomePageState extends State<HomePage> {
             height: 20,
           ),
           Text(
-            viacepModel.cep ?? '',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            cepModel.cep ?? '',
+            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           Text(
-            viacepModel.localidade ?? '',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            cepModel.localidade ?? '',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Text(
-            viacepModel.logradouro ?? '',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            cepModel.logradouro ?? '',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Text(
-            viacepModel.uf ?? '',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            cepModel.uf ?? '',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          if (loading) CircularProgressIndicator(),
+          if (loading) const CircularProgressIndicator(),
           Text(
-            viacepModel.ddd ?? '',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            cepModel.ddd ?? '',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          ElevatedButton(onPressed: () {}, child: const Text('Cadastrar Cep'))
+          ElevatedButton(
+              onPressed: () async {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CepPage()));
+                /*cepModel.cep;
+                cepModel.bairro;
+                cepModel.ddd;
+                cepModel.localidade;
+                cepModel.bairro;
+                cepModel.uf;
+                var response = await BaseClient()
+                    .post(baseUrl, cepModel)
+                    .catchError((err) {});
+                if (response == null) return;
+                debugPrint('successful');*/
+              },
+              child: const Text('Cadastrar Cep'))
         ],
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {}),
     );
   }
 }
